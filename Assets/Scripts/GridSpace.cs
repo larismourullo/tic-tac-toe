@@ -8,11 +8,13 @@ public class GridSpace : MonoBehaviour {
     public Text buttonText;
     private GameController gameController;
 
+    // Função que inicializa a controller
     public void SetGameControllerReference(GameController controller)
     {
         gameController = controller;
     }
 
+    // Função que roda ao clicar no botão e adiciona a peça do atual jogador
     public void SetSpace()
     {
         buttonText.text = gameController.GetPlayerSide();

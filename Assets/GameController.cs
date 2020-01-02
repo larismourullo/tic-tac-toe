@@ -15,19 +15,22 @@ public class GameController : MonoBehaviour
     public Text gameOverText;
     public GameObject restartButton;
     
+    // Construtor inicializando a classe Random
     public GameController()
     {
         random = new System.Random();
     }
 
+    // Função com as informações pra o início de uma partida
     private void Awake()
     {
-        SetGameControllerReferenceOnButtons();
+        SetGameControllerReferenceOnButtons(); 
         playerSide = userPlayer;
         count = 0;
         restartButton.SetActive(false);
     }
 
+    // Função que referencia os botões
     private void SetGameControllerReferenceOnButtons()
     {
         for (int i = 0; i < buttonList.Length; i++)
@@ -36,15 +39,18 @@ public class GameController : MonoBehaviour
         }
     }
 
+    // Função que verifica qual é o jogador atual
     public string GetPlayerSide()
     {
         return playerSide;
     }
 
+    // Função que finaliza o turno, ou seja, a jogada
     public void EndTurn()
     {
         count++;
 
+        // Valida por meio de força bruta se o jogador possui 3 peças em sequência
         if (((buttonList[0].text == playerSide) && (buttonList[1].text == playerSide) && (buttonList[2].text == playerSide)) ||
              ((buttonList[3].text == playerSide) && (buttonList[4].text == playerSide) && (buttonList[5].text == playerSide)) ||
              ((buttonList[6].text == playerSide) && (buttonList[7].text == playerSide) && (buttonList[8].text == playerSide)) ||
@@ -57,6 +63,7 @@ public class GameController : MonoBehaviour
             GameOver(playerSide);
             return;
         }
+        // Valida caso todas as peças sejam postas e nenhum usuário tenha ganhado
         else if (count > 8)
         {
             GameOver("Empate");
@@ -65,17 +72,20 @@ public class GameController : MonoBehaviour
 
         ChangeSides();
 
+        // Verifica se é a vez do computador jogar
         if (playerSide == computerPlayer)
         {
             ComputerThink();
         }
     }
 
+    // Função que efetua a troca da vez dos jogadores
     private void ChangeSides()
     {
         playerSide = (playerSide == userPlayer) ? computerPlayer : userPlayer;
     }
 
+    // Função que finaliza o jogo informando o vencedor
     private void GameOver(string winningPlayer)
     {
         SetBoardInteractable(false);
@@ -86,12 +96,14 @@ public class GameController : MonoBehaviour
         }
         else
         {
+            playerSide = (playerSide == userPlayer) ? "Usuário" : "Computador";
             SetGameOverText(playerSide + " Ganhou!");
         }
 
         restartButton.SetActive(true);
     }
 
+    // Função que permite você reiniciar o jogo novamente
     public void RestartGame()
     {
         playerSide = userPlayer;
@@ -108,6 +120,7 @@ public class GameController : MonoBehaviour
         restartButton.SetActive(false);
     }
 
+    // Função que habilita ou desabilita todos os botões
     private void SetBoardInteractable(bool toogle)
     {
         for (int i = 0; i < buttonList.Length; i++)
@@ -116,11 +129,13 @@ public class GameController : MonoBehaviour
         }
     }
 
+    // Função que informa se a partida teve um ganhador ou foi empate
     private void SetGameOverText(string valor)
     {
         gameOverText.text = valor;
     }
 
+    // Função que prediz se na próxima jogada é possível ganhar
     public int VerifyWin(string player)
     {
         
@@ -187,13 +202,16 @@ public class GameController : MonoBehaviour
         return 10;       
     }
 
+    // Função que verifica se é a primeira jogada
     private bool IsFirstPlay()
     {
         return count == 1;
     }
 
+    // Função que faz cria a lógica do computador
     public void ComputerThink()
     {
+        // Verifica se o usuário jogou nos cantos
         if (IsFirstPlay() &&
             (buttonList[0].text == userPlayer ||
             buttonList[2].text == userPlayer ||
@@ -206,6 +224,7 @@ public class GameController : MonoBehaviour
             return;
         }
 
+        // Verifica se o usuário jogou nas posições ao lado do centro
         if (IsFirstPlay() &&
             (buttonList[1].text == userPlayer ||
             buttonList[3].text == userPlayer ||
@@ -217,6 +236,7 @@ public class GameController : MonoBehaviour
             return;
         }
 
+        // Verifica se o usuário jogou no meio
         if (IsFirstPlay() &&
             buttonList[4].text == userPlayer)
         {
@@ -245,10 +265,14 @@ public class GameController : MonoBehaviour
             return;
         }
 
+        // Caso nada seja feito anteriormente gera uma posição aleatória
         CheckRandomButton(new int[9] { 0, 1, 2, 3, 4, 5, 6, 7, 8 });
+
+        // Finaliza o turno passando a vez para o usuário realizar sua jogada
         EndTurn();
     }
 
+    // Função que gera um local aleatório no tabuleiro
     private void CheckRandomButton(int[] buttonIndexes)
     {
         int randomIndex = random.Next(0, buttonIndexes.Length);
@@ -261,6 +285,7 @@ public class GameController : MonoBehaviour
         CheckButtonForCurrentPlayer(randomIndex);
     }
 
+    // Função que coloca a peça do computador em determinada posição
     private void CheckButtonForCurrentPlayer(int i)
     {
         Color blueColor = new Color();
@@ -270,6 +295,7 @@ public class GameController : MonoBehaviour
         buttonList[i].GetComponentInParent<Button>().interactable = false;
     }
 
+    // Função que verifica se o campo já possui alguma peça
     private bool CurrentPlayerCanCheck(int i)
     {
         return string.IsNullOrEmpty(buttonList[i].text);
